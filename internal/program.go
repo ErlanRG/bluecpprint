@@ -79,6 +79,17 @@ func (p *Project) CreateProjectStructure() error {
 		return err
 	}
 
+	// Initialize the project with a commit
+	if err := ExecuteCmd("git", []string{"add", "-A"}, projectPath); err != nil {
+		log.Printf("Error adding files to git repository: %v\n", err)
+		return err
+	}
+
+	if err := ExecuteCmd("git", []string{"commit", "-m", "Initial commit"}, projectPath); err != nil {
+		log.Printf("Error committing files to git repository: %v\n", err)
+		return err
+	}
+
 	return nil
 }
 
