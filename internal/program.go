@@ -1,6 +1,7 @@
 package internal
 
 import (
+	_ "embed"
 	"errors"
 	"log"
 	"os"
@@ -11,12 +12,16 @@ import (
 )
 
 const (
-	gitignoreTmplPath = "templates/.gitignore.tmpl"
-	mainTmplPath      = "templates/main.cpp.tmpl"
-	srcPath           = "src"
-	binPath           = "bin"
-	includePath       = "include"
+	srcPath     = "src"
+	binPath     = "bin"
+	includePath = "include"
 )
+
+//go:embed templates/.gitignore.tmpl
+var gitignoreTmpl string
+
+//go:embed templates/main.cpp.tmpl
+var mainTmpl string
 
 type Project struct {
 	ProjectName  string
@@ -67,14 +72,14 @@ func (p *Project) CreateProjectStructure() error {
 	}
 
 	// Create .gitignore file
-	if err := p.CreateFileFromTemplate(gitignoreTmplPath, projectPath, ".gitignore"); err != nil {
+	if err := p.CreateFileFromTemplate(gitignoreTmpl, projectPath, ".gitignore"); err != nil {
 		log.Printf("Error creating .gitignore file: %v\n", err)
 		return err
 	}
 
 	// Create main.cpp file
 	mainPath := filepath.Join(projectPath, srcPath)
-	if err := p.CreateFileFromTemplate(mainTmplPath, mainPath, "main.cpp"); err != nil {
+	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main.cpp"); err != nil {
 		log.Printf("Error creating main.cpp file: %v\n", err)
 		return err
 	}
@@ -93,9 +98,9 @@ func (p *Project) CreateProjectStructure() error {
 	return nil
 }
 
-func (p *Project) CreateFileFromTemplate(tmplPath string, destinationPath string, filename string) error {
+func (p *Project) CreateFileFromTemplate(tmplContent string, destinationPath string, filename string) error {
 	// read template file
-	tmpl, err := template.ParseFiles(tmplPath)
+	tmpl, err := template.New(filename).Parse(tmplContent)
 	if err != nil {
 		log.Printf("Error parsing template file: %v\n", err)
 		return err
