@@ -1,0 +1,18 @@
+CC=g++
+FLAGS=-O2 -Wall -Wextra -Wfatal-errors -pedantic
+BIN_DIR=bin
+SRC_DIR=src
+INCLUDE_DIR=include
+
+all: build
+
+build:
+	@$(CC) $(FLAGS) -I$(INCLUDE_DIR) $(SRC_DIR)/*.cpp -o $(BIN_DIR)/main
+
+clean:
+	@rm -f $(BIN_DIR)/*
+
+run:
+	@./$(BIN_DIR)/main
+
+.PHONY: all build run clean

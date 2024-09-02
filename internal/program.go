@@ -23,6 +23,12 @@ var gitignoreTmpl string
 //go:embed templates/main.cpp.tmpl
 var mainTmpl string
 
+//go:embed templates/Makefile.tmpl
+var makefileTmpl string
+
+//go:embed templates/.clang-format.tmpl
+var clangFormatTmpl string
+
 type Project struct {
 	ProjectName  string
 	AbsolutePath string
@@ -81,6 +87,18 @@ func (p *Project) CreateProjectStructure() error {
 	mainPath := filepath.Join(projectPath, srcPath)
 	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main.cpp"); err != nil {
 		log.Printf("Error creating main.cpp file: %v\n", err)
+		return err
+	}
+
+	// Create Makefile
+	if err := p.CreateFileFromTemplate(makefileTmpl, projectPath, "Makefile"); err != nil {
+		log.Printf("Error creating Makefile: %v\n", err)
+		return err
+	}
+
+	// Create clang-format file
+	if err := p.CreateFileFromTemplate(clangFormatTmpl, projectPath, ".clang-format"); err != nil {
+		log.Printf("Error creating clang-format: %v\n", err)
 		return err
 	}
 
