@@ -50,7 +50,7 @@ my_project
 │   └── main.cpp
 ├── .clang-format
 ├── .gitignore
-└── Makefile
+├── Makefile
 └── README.md
 ```
 
