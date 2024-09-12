@@ -1,6 +1,10 @@
-# Project {{.ProjectName}}
+<h1 align="center">
+    Project {{.ProjectName}}
+</h1>
 
-Description goes here.
+<div align="center">
+    Description goes here.
+</div>
 
 ## Build the project
 
@@ -8,19 +12,33 @@ Description goes here.
 
 Binaries will be placed inside the `bin` directory. To build the project just run:
 ```bash
-make
+$ make
 ```
+
+If `make` is not installed in your machine, then go the old way:
+```
+$ g++ -O2 -Wall -Wextra -Wfatal-errors -pedantic -Iinclude src/*.cpp -o bin/main
+```
+
+> [!IMPORTANT]
+> This `g++` command uses some compilations flags to show relevant warnings.
+> A more detailed documentation on these flags is located [here](https://bytes.usc.edu/cs104/wiki/gcc/).
 
 ### Build & run
 
 To compile and run the application:
 ```bash
-make run
+$ make run
+```
+
+Or just run the following command from the root directory
+```
+$ ./bin/main
 ```
 
 ### Clean `bin` directory
 
 Clean the `bin` directory using the following command:
 ```bash
-make clean
+$ make clean
 ```
