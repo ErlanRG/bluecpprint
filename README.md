@@ -51,6 +51,7 @@ my_project
 ├── .clang-format
 ├── .gitignore
 └── Makefile
+└── README.md
 ```
 
 * Git repository automatically created.
