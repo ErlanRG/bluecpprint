@@ -29,6 +29,9 @@ var makefileTmpl string
 //go:embed templates/.clang-format.tmpl
 var clangFormatTmpl string
 
+//go:embed templates/README.md.tmpl
+var readmeTmpl string
+
 type Project struct {
 	ProjectName  string
 	AbsolutePath string
@@ -78,27 +81,33 @@ func (p *Project) CreateProjectStructure() error {
 	}
 
 	// Create .gitignore file
-	if err := p.CreateFileFromTemplate(gitignoreTmpl, projectPath, ".gitignore"); err != nil {
+	if err := p.CreateFileFromTemplate(gitignoreTmpl, projectPath, ".gitignore", nil); err != nil {
 		log.Printf("Error creating .gitignore file: %v\n", err)
 		return err
 	}
 
 	// Create main.cpp file
 	mainPath := filepath.Join(projectPath, srcPath)
-	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main.cpp"); err != nil {
+	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main.cpp", nil); err != nil {
 		log.Printf("Error creating main.cpp file: %v\n", err)
 		return err
 	}
 
 	// Create Makefile
-	if err := p.CreateFileFromTemplate(makefileTmpl, projectPath, "Makefile"); err != nil {
+	if err := p.CreateFileFromTemplate(makefileTmpl, projectPath, "Makefile", nil); err != nil {
 		log.Printf("Error creating Makefile: %v\n", err)
 		return err
 	}
 
 	// Create clang-format file
-	if err := p.CreateFileFromTemplate(clangFormatTmpl, projectPath, ".clang-format"); err != nil {
+	if err := p.CreateFileFromTemplate(clangFormatTmpl, projectPath, ".clang-format", nil); err != nil {
 		log.Printf("Error creating clang-format: %v\n", err)
+		return err
+	}
+
+	// Create README file
+	if err := p.CreateFileFromTemplate(readmeTmpl, projectPath, "README.md", map[string]string{"ProjectName": p.ProjectName}); err != nil {
+		log.Printf("Error creating readme file: %v\n", err)
 		return err
 	}
 
@@ -116,7 +125,7 @@ func (p *Project) CreateProjectStructure() error {
 	return nil
 }
 
-func (p *Project) CreateFileFromTemplate(tmplContent string, destinationPath string, filename string) error {
+func (p *Project) CreateFileFromTemplate(tmplContent string, destinationPath string, filename string, data interface{}) error {
 	// read template file
 	tmpl, err := template.New(filename).Parse(tmplContent)
 	if err != nil {
@@ -132,7 +141,7 @@ func (p *Project) CreateFileFromTemplate(tmplContent string, destinationPath str
 	}
 	defer generatedFile.Close()
 
-	err = tmpl.Execute(generatedFile, nil)
+	err = tmpl.Execute(generatedFile, data)
 	if err != nil {
 		log.Printf("Error executing template: %v", err)
 	}
