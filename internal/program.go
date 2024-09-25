@@ -3,6 +3,8 @@ package internal
 import (
 	_ "embed"
 	"errors"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -20,7 +22,7 @@ const (
 //go:embed templates/.gitignore.tmpl
 var gitignoreTmpl string
 
-//go:embed templates/main.cpp.tmpl
+//go:embed templates/main.tmpl
 var mainTmpl string
 
 //go:embed templates/Makefile.tmpl
@@ -35,6 +37,7 @@ var readmeTmpl string
 type Project struct {
 	ProjectName  string
 	AbsolutePath string
+	Language     string
 }
 
 func (p *Project) CreateProjectStructure() error {
@@ -86,15 +89,15 @@ func (p *Project) CreateProjectStructure() error {
 		return err
 	}
 
-	// Create main.cpp file
+	// Create main file
 	mainPath := filepath.Join(projectPath, srcPath)
-	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main.cpp", nil); err != nil {
-		log.Printf("Error creating main.cpp file: %v\n", err)
+	if err := p.CreateFileFromTemplate(mainTmpl, mainPath, "main."+p.Language, map[string]string{"Language": p.Language}); err != nil {
+		log.Printf("Error creating main.%s file: %v\n", p.Language, err)
 		return err
 	}
 
 	// Create Makefile
-	if err := p.CreateFileFromTemplate(makefileTmpl, projectPath, "Makefile", nil); err != nil {
+	if err := p.CreateFileFromTemplate(makefileTmpl, projectPath, "Makefile", map[string]string{"Language": p.Language}); err != nil {
 		log.Printf("Error creating Makefile: %v\n", err)
 		return err
 	}
@@ -173,11 +176,43 @@ func ExecuteCmd(name string, args []string, dir string) error {
 	return nil
 }
 
-func CheckArgs() error {
-	// Check if there are enough arguments
-	if len(os.Args) != 2 {
-		return errors.New("Usage: bluecpprint <project_name>")
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage: bluecpprint --language=[LANGUAGE] [PROJECT_NAME]\n")
+    fmt.Fprintf(os.Stderr, "Options:")
+	fmt.Fprintf(os.Stderr, "\n  --language=[LANG]")
+	fmt.Fprintf(os.Stderr, "       Specify the programming language. Choose between 'c' for C or 'cpp' for C++. The project files will change accordingly.\n")
+}
+
+func valudateLanguage(lang string) error {
+	if lang == "" {
+		return errors.New("Language is required")
+	}
+
+	if lang != "c" && lang != "cpp" {
+		return errors.New("Invalid language. Allowed values are: c, cpp")
 	}
 
 	return nil
+}
+
+func printUsageAndError(msg string) (string, string, error) {
+	flag.Usage()
+	return "", "", errors.New(msg)
+}
+
+func CheckArgs() (string, string, error) {
+	language := flag.String("language", "", "")
+	flag.Usage = usage
+	flag.Parse()
+
+	if len(flag.Args()) < 1 {
+		return printUsageAndError("Language and Project Name are required")
+	}
+	projectName := flag.Arg(0)
+
+	if err := valudateLanguage(*language); err != nil {
+		return printUsageAndError(err.Error())
+	}
+
+	return *language, projectName, nil
 }

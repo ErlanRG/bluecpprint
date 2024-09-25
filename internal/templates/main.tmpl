@@ -1,0 +1,14 @@
+{{ if eq .Language "cpp" -}}
+#include <iostream>
+{{ else -}}
+#include <stdio.h>
+{{ end }}
+int main (int argc, char *argv[]) 
+{
+    {{- if eq .Language "cpp" }}
+    std::cout << "Hello World" << std::endl;
+    {{- else }}
+    printf("Hello World\n");
+    {{- end }}
+    return 0;
+}

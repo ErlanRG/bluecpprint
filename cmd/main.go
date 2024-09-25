@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	if err := pro.CheckArgs(); err != nil {
+	language, projectName, err := pro.CheckArgs()
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -19,13 +20,14 @@ func main() {
 	}
 
 	p := pro.Project{
-		ProjectName:  os.Args[1],
 		AbsolutePath: currentWorkingDir,
+		Language:     language,
+		ProjectName:  projectName,
 	}
 
 	if err := p.CreateProjectStructure(); err != nil {
 		log.Fatalf("Error creating project structure: %v", err)
 	}
 
-    log.Printf("Project %s created successfully", p.ProjectName)
+	log.Printf("Project %s created successfully", p.ProjectName)
 }
