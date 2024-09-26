@@ -1,18 +1,18 @@
 <h1 align="center"> BLUECCPRINT </h1>
 
-A CLI utility to create a new C++ projects with a predefined structure inspired by Melkeydev's go-blueprint built in Go.
+A CLI utility to create a new C and C++ projects with a predefined structure inspired by Melkeydev's go-blueprint built in Go.
 
 ## Setup
 
 ### Requirements
 
-* go
-* make
+* go (if you want to build from source)
+* make (makes everything easier)
 
 Clone the project
 
 ```bash
-  $ git clone https://github.com/ErlanRG/bluecpprint
+  $ git clone --depth=1 https://github.com/ErlanRG/bluecpprint
 ```
 
 Go to the project directory
@@ -29,12 +29,20 @@ Build and install
 
 The binary will be installed in `$HOME/.local/bin/`
 
+### Building from source
+
+Compile this using `go`
+
+```
+  $ go build -o bluecpprint cmd/main.go
+```
+
 ## Usage
 
 Create a project
 
 ```bash
-  $ bluecpprint <project_name>
+  $ bluecpprint --language=[LANGUAGE] [PROJECT_NAME]
 ```
 
 ## Structure
@@ -47,7 +55,7 @@ my_project
 ├── bin
 ├── include
 ├── src/
-│   └── main.cpp
+│   └── main.cpp        // File extension will change depending on the selected language
 ├── .clang-format
 ├── .gitignore
 ├── Makefile

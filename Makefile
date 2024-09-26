@@ -10,7 +10,6 @@ build:
 	@go build -o $(TARGET) $(SRC) 2>&1
 
 run:
-	@echo "Running..."
 	@go run $(SRC)
 
 install: build
